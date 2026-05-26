@@ -1,6 +1,23 @@
-import type { StateMap } from "../formatter.js";
+import type { StateMap } from "./states.js";
 import { tokenRegistry } from "./tokens.js";
 import { dfaStates } from "./states.js";
+
+const symbols = [
+  "===", "!==",
+  "<=", ">=", "!=", "==", "||", "&&",
+  "(", ")", "{", "}", ";", "=", "!", "&", "|", "<", ">",
+];
+
+const pattern = new RegExp(
+  symbols.map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|"),
+  "g"
+);
+
+const formatSource = (input: string) => {
+  let text = (input + "\r").replaceAll("\r", " \r");
+  text = text.replace(pattern, (match) => ` ${match} `);
+  return text;
+};
 
 class LexerEngine {
   public scan(input: string) {
@@ -14,17 +31,20 @@ class LexerEngine {
     while (i < len) {
       const ch = input[i];
 
-      if (ch === "\r") {
+      if (ch === "\n") {
         row++;
       }
 
       const next = dfaStates[state]?.[ch as keyof StateMap];
 
-      if (next === 201 || next === 202 || next === undefined) {
-        const msg =
-          (tokenRegistry[next!] as { label: string })?.label || "Unknown error";
-        const code = next ?? "Unidentified";
-        throw new Error(`Lexical error at row ${row}: ${msg} (code: ${code})`);
+      if (next === 202) {
+        throw new Error(`Lexical error at line ${row}: [001] INVALID IDENTIFIER`);
+      }
+      if (next === 201) {
+        throw new Error(`Lexical error at line ${row}: [002] INVALID NUMERIC CONSTANT`);
+      }
+      if (next === undefined) {
+        throw new Error(`Lexical error at line ${row}: UNKNOWN`);
       }
 
       buffer += ![" ", "\t", "\n", "\r"].includes(ch!) ? ch : "";
@@ -53,7 +73,7 @@ class LexerEngine {
 export const tokenize = (input: string) => {
   const engine = new LexerEngine();
   try {
-    return engine.scan(input);
+    return engine.scan(formatSource(input));
   } catch (err) {
     console.error(err instanceof Error ? err.message : "Unknown error");
   }
