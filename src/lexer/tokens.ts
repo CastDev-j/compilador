@@ -83,19 +83,19 @@ export const tokenRegistry: Record<
   ],
   20004: [
     { code: 601, label: "ID" },
-    { code: 303, label: "+" },
+    { code: 207, label: "+" },
   ],
   20005: [
     { code: 601, label: "ID" },
-    { code: 303, label: "-" },
+    { code: 208, label: "-" },
   ],
   20006: [
     { code: 601, label: "ID" },
-    { code: 303, label: "*" },
+    { code: 204, label: "*" },
   ],
   20007: [
     { code: 601, label: "ID" },
-    { code: 303, label: "/" },
+    { code: 205, label: "/" },
   ],
   20008: [
     { code: 601, label: "ID" },

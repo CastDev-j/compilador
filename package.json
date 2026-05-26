@@ -8,6 +8,7 @@
     "start": "tsx src/main.ts",
     "dev": "tsx watch src/main.ts",
     "build": "tsc",
+    "test": "tsx src/test/all.test.ts",
     "export:xlsx": "tsx src/lexer/export-states.ts"
   },
   "dependencies": {
