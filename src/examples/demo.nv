@@ -11,3 +11,10 @@ if x == 42 && y == 10 {
 }
 
 let flag = x != y
+
+let a = nil
+let b = get map
+let c = has key
+let d = hex zip
+let e = use and
+let f = yes
