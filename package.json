@@ -1,20 +1,21 @@
 {
-  "name": "automata-compiler",
-  "module": "app/index.ts",
+  "name": "nova-lexer",
+  "version": "1.0.0",
   "type": "module",
   "private": true,
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
-  },
+  "description": "NOVA language lexical analyzer - DFA-based tokenizer",
   "scripts": {
+    "start": "tsx src/main.ts",
+    "dev": "tsx watch src/main.ts",
     "build": "tsc",
-    "dev": "bun run --watch app/index.ts",
-    "export:xlsx": "bun run app/compiler/export-transition-table.ts"
+    "export:xlsx": "tsx src/lexer/export-states.ts"
   },
   "dependencies": {
     "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "tsx": "^4",
+    "typescript": "^5"
   }
 }

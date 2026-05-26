@@ -1,6 +1,6 @@
-import type { State } from "@/interface";
+import type { StateMap } from "../../formatter.js";
 
-export const transitionTable: Record<number, State> = {
+export const dfaStates: Record<number, StateMap> = {
   // ESTADO 0: Inicial
   0: {
     a: 200, b: 1, c: 6, d: 21, e: 29, f: 33, g: 200, h: 200, i: 36, j: 200,

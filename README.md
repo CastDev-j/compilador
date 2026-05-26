@@ -1,38 +1,22 @@
-# CAT language compiler
+# NOVA Lexer
 
-## Installation and Usage
+A DFA-based lexical analyzer for the NOVA programming language.
 
-Requirements:
-
-- [Bun](https://bun.sh/)
-
-clone the repository:
+## Usage
 
 ```bash
-git clone https://github.com/CastDev-j/automata-compiler.git
-cd automata-compiler
+npm install
+npm start
 ```
 
-To install dependencies:
+## Development
 
 ```bash
-// Install dependencies
-
-bun install
+npm run dev
 ```
 
-To run:
+## Build
 
 ```bash
-// Run the development server by default it will tokenize the file app/examples/demo.cat and print the tokens in the console
-
-bun run dev
-```
-
-Run tests:
-
-```bash
-// Run tests of the entire language
-
-bun test
+npm run build
 ```

@@ -1,23 +1,4 @@
-const tokens = [
-  "===", "!==",           
-  "<=", ">=", "!=", "==", "||", "&&",  
-  "(", ")", "{", "}", ";", "=", "!", "&", "|", "<", ">",  
-];
-
-const pattern = new RegExp(
-  tokens.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|"),
-  "g"
-);
-
-export const formatDocument = (entry: string) => {
-  let text = (entry + "\r").replaceAll("\r", " \r");
-
-  text = text.replace(pattern, (match) => ` ${match} `);
-
-  return text;
-};
-
-export interface State {
+export interface StateMap {
   a?: number | undefined;
   b?: number | undefined;
   c?: number | undefined;
@@ -84,3 +65,20 @@ export interface State {
   "\r"?: number | undefined;
   _?: number | undefined;
 }
+
+const symbols = [
+  "===", "!==",
+  "<=", ">=", "!=", "==", "||", "&&",
+  "(", ")", "{", "}", ";", "=", "!", "&", "|", "<", ">",
+];
+
+const pattern = new RegExp(
+  symbols.map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|"),
+  "g"
+);
+
+export const formatSource = (input: string) => {
+  let text = (input + "\r").replaceAll("\r", " \r");
+  text = text.replace(pattern, (match) => ` ${match} `);
+  return text;
+};
