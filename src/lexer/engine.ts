@@ -1,4 +1,3 @@
-import type { StateMap } from "./states.js";
 import { tokenRegistry } from "./tokens.js";
 import { dfaStates } from "./states.js";
 
@@ -36,7 +35,7 @@ class LexerEngine {
         row++;
       }
 
-      const next = dfaStates[state]?.[ch as keyof StateMap];
+      const next = (dfaStates as any)[state]?.[ch];
 
       if (next === 202) {
         throw new Error(`Lexical error at line ${row}: [001] INVALID IDENTIFIER`);

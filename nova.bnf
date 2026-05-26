@@ -1,0 +1,149 @@
+S = <programa>
+Vn = {
+  <programa>, <lista_sentencias>, <sentencia>, <declaracion>, <asignacion>,
+  <tipo_var>, <if_stmt>, <switch_stmt>, <case_list>, <case_stmt>,
+  <default_stmt>, <while_stmt>, <for_of_stmt>, <do_stmt>, <return_stmt>,
+  <break_stmt>, <log_stmt>, <push_stmt>, <console_stmt>, <get_stmt>,
+  <has_stmt>, <key_stmt>, <use_stmt>, <zip_stmt>, <bloque>,
+  <expr>, <expr_and>, <expr_or>, <expr_bitwise>, <expr_igualdad>,
+  <expr_rel>, <expr_arit>, <termino>, <unario>, <factor>,
+  <acceso_miembro>, <llamada_builtin>, <hex_literal>, <map_literal>,
+  <lista_pares>, <par>, <arreglo_literal>, <lista_expr>, <literal>
+}
+Vt = {
+  /* PALABRAS RESERVADAS */
+  break, case, class, const, console, default, do, enum, for, get, has, hex,
+  if, interface, key, let, log, map, nil, of, push, return, switch, type,
+  use, var, while, yes, zip, and,
+
+  /* OPERADORES */
+  =, +=, -=, *=, /=, %=,
+  +, -, *, /, %,
+  ++, --,
+  ==, ===, !=, !==, >, <, >=, <=,
+  &&, ||, !, &, |,
+
+  /* SIGNOS Y PUNTUACIÓN */
+  ;, ,, ., (, ), {, }, [, ], :,
+
+  /* TOKENS DINÁMICOS */
+  ID, NUMERO, FLOTANTE, STRING_LIT
+}
+1  <programa> ::= <lista_sentencias>
+2  <lista_sentencias> ::= <sentencia>
+3  <lista_sentencias> ::= <sentencia> <lista_sentencias>
+4  <sentencia> ::= <declaracion>
+5  <sentencia> ::= <asignacion>
+6  <sentencia> ::= <if_stmt>
+7  <sentencia> ::= <switch_stmt>
+8  <sentencia> ::= <while_stmt>
+9  <sentencia> ::= <for_of_stmt>
+10 <sentencia> ::= <do_stmt>
+11 <sentencia> ::= <return_stmt>
+12 <sentencia> ::= <break_stmt>
+13 <sentencia> ::= <log_stmt>
+14 <sentencia> ::= <push_stmt>
+15 <sentencia> ::= <console_stmt>
+16 <sentencia> ::= <get_stmt>
+17 <sentencia> ::= <has_stmt>
+18 <sentencia> ::= <key_stmt>
+19 <sentencia> ::= <use_stmt>
+20 <sentencia> ::= <zip_stmt>
+21 <sentencia> ::= <expr> ;
+22 <sentencia> ::= <bloque>
+23 <declaracion> ::= <tipo_var> ID = <expr> ;
+24 <tipo_var> ::= let
+25 <tipo_var> ::= const
+26 <tipo_var> ::= var
+27 <asignacion> ::= ID = <expr> ;
+28 <asignacion> ::= ID += <expr> ;
+29 <asignacion> ::= ID -= <expr> ;
+30 <asignacion> ::= ID *= <expr> ;
+31 <asignacion> ::= ID /= <expr> ;
+32 <asignacion> ::= ID %= <expr> ;
+33 <asignacion> ::= ID ++ ;
+34 <asignacion> ::= ID -- ;
+35 <if_stmt> ::= if <expr> <sentencia>
+36 <if_stmt> ::= if <expr> <sentencia> <sentencia>
+37 <switch_stmt> ::= switch <expr> { <case_list> <default_stmt> }
+38 <case_list> ::= <case_stmt>
+39 <case_list> ::= <case_stmt> <case_list>
+40 <case_stmt> ::= case <expr> : <lista_sentencias> break ;
+41 <case_stmt> ::= case <expr> : <lista_sentencias>
+42 <default_stmt> ::= default : <lista_sentencias>
+43 <default_stmt> ::= λ
+44 <while_stmt> ::= while <expr> <bloque>
+45 <for_of_stmt> ::= for ID of <expr> <bloque>
+46 <do_stmt> ::= do <bloque> while <expr> ;
+47 <return_stmt> ::= return <expr> ;
+48 <return_stmt> ::= return ;
+49 <break_stmt> ::= break ;
+50 <log_stmt> ::= log <expr> ;
+51 <push_stmt> ::= push <expr> ;
+52 <console_stmt> ::= console . log <expr> ;
+53 <get_stmt> ::= get <expr> <expr> ;
+54 <has_stmt> ::= has <expr> <expr> ;
+55 <key_stmt> ::= key <expr> ;
+56 <use_stmt> ::= use <expr> ;
+57 <zip_stmt> ::= zip <expr> <expr> ;
+58 <bloque> ::= { <lista_sentencias> }
+59 <expr> ::= <expr_and>
+60 <expr_and> ::= <expr_or>
+61 <expr_and> ::= <expr_and> and <expr_or>
+62 <expr_or> ::= <expr_bitwise>
+63 <expr_or> ::= <expr_or> || <expr_bitwise>
+64 <expr_or> ::= ! <expr_bitwise>
+65 <expr_bitwise> ::= <expr_igualdad>
+66 <expr_bitwise> ::= <expr_bitwise> & <expr_igualdad>
+67 <expr_bitwise> ::= <expr_bitwise> | <expr_igualdad>
+68 <expr_igualdad> ::= <expr_rel>
+69 <expr_igualdad> ::= <expr_rel> == <expr_rel>
+70 <expr_igualdad> ::= <expr_rel> != <expr_rel>
+71 <expr_igualdad> ::= <expr_rel> === <expr_rel>
+72 <expr_igualdad> ::= <expr_rel> !== <expr_rel>
+73 <expr_rel> ::= <expr_arit>
+74 <expr_rel> ::= <expr_arit> < <expr_arit>
+75 <expr_rel> ::= <expr_arit> > <expr_arit>
+76 <expr_rel> ::= <expr_arit> <= <expr_arit>
+77 <expr_rel> ::= <expr_arit> >= <expr_arit>
+78 <expr_arit> ::= <termino>
+79 <expr_arit> ::= <expr_arit> + <termino>
+80 <expr_arit> ::= <expr_arit> - <termino>
+81 <termino> ::= <unario>
+82 <termino> ::= <termino> * <unario>
+83 <termino> ::= <termino> / <unario>
+84 <termino> ::= <termino> % <unario>
+85 <unario> ::= <factor>
+86 <unario> ::= + <unario>
+87 <unario> ::= - <unario>
+88 <factor> ::= ID
+89 <factor> ::= <literal>
+90 <factor> ::= ( <expr> )
+91 <factor> ::= <acceso_miembro>
+92 <factor> ::= <llamada_builtin>
+93 <factor> ::= <hex_literal>
+94 <factor> ::= <map_literal>
+95 <factor> ::= <arreglo_literal>
+96 <acceso_miembro> ::= ID . ID
+97 <acceso_miembro> ::= <acceso_miembro> . ID
+98 <llamada_builtin> ::= log <expr>
+99 <llamada_builtin> ::= get <expr> <expr>
+100 <llamada_builtin> ::= has <expr> <expr>
+101 <llamada_builtin> ::= key <expr>
+102 <llamada_builtin> ::= use <expr>
+103 <llamada_builtin> ::= zip <expr> <expr>
+104 <llamada_builtin> ::= push <expr>
+105 <hex_literal> ::= hex NUMERO
+106 <map_literal> ::= map { <lista_pares> }
+107 <lista_pares> ::= <par>
+108 <lista_pares> ::= <par> , <lista_pares>
+109 <par> ::= <expr> : <expr>
+110 <arreglo_literal> ::= [ <lista_expr> ]
+111 <lista_expr> ::= λ
+112 <lista_expr> ::= <expr>
+113 <lista_expr> ::= <expr> , <lista_expr>
+114 <literal> ::= NUMERO
+115 <literal> ::= FLOTANTE
+116 <literal> ::= STRING_LIT
+117 <literal> ::= nil
+118 <literal> ::= yes
