@@ -6,7 +6,7 @@ if x > y {
   log name
 }
 
-if x == 42 && y == 10 {
+if x==42 && y == 10 {
   log "match"
 }
 

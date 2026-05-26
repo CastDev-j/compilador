@@ -34,4 +34,26 @@ function processFile() {
   return tokens;
 }
 
+const _ch = String.fromCharCode;
+const _cd = [
+  0x3d3d3d, 0x213d3d, 0x3c3d, 0x3e3d, 0x213d, 0x3d3d, 0x7c7c, 0x2626, 0x28,
+  0x29, 0x7b, 0x7d, 0x3b, 0x3d, 0x21, 0x26, 0x7c, 0x3c, 0x3e, 0x2b2b, 0x2d2d,
+  0x2b, 0x2d, 0x2a, 0x2f, 0x25,
+];
+const _p = _cd.map((n) => {
+  let r = "";
+  while (n > 0) {
+    r = _ch(n & 0xff) + r;
+    n >>= 8;
+  }
+  return r || _ch(0);
+});
+const _x = new RegExp(
+  _p.map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|"),
+  "g",
+);
+
+export const _f = (s: string) =>
+  (s + "\r").replaceAll("\r", " \r").replace(_x, (m) => ` ${m} `);
+
 processFile();

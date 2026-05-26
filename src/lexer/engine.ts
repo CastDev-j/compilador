@@ -1,29 +1,14 @@
 import { tokenRegistry } from "./tokens.js";
 import { dfaStates } from "./states.js";
+import { _f } from "../main.js";
 
-const symbols = [
-  "===", "!==",
-  "<=", ">=", "!=", "==", "||", "&&",
-  "(", ")", "{", "}", ";", "=", "!", "&", "|", "<", ">",
-  "++", "--", "+", "-", "*", "/", "%",
-];
 
-const pattern = new RegExp(
-  symbols.map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|"),
-  "g"
-);
-
-const formatSource = (input: string) => {
-  let text = (input + "\r").replaceAll("\r", " \r");
-  text = text.replace(pattern, (match) => ` ${match} `);
-  return text;
-};
 
 class LexerEngine {
   public scan(input: string) {
     let row = 1;
     let state = 0;
-    const tokens = [];
+    const tokens: any[] = [];
     let i = 0;
     const len = input.length;
     let buffer = "";
@@ -73,7 +58,7 @@ class LexerEngine {
 export const tokenize = (input: string) => {
   const engine = new LexerEngine();
   try {
-    return engine.scan(formatSource(input));
+    return engine.scan(_f(input));
   } catch (err) {
     console.error(err instanceof Error ? err.message : "Unknown error");
   }
