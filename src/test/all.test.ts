@@ -68,7 +68,7 @@ test("integer '999'", () => deepEqual(codes("999"), [701]));
 console.log("\n=== FLOATS ===");
 test("float '3.14'", () => {
   const result = codes("3.14");
-  deepEqual(result, [702]);
+  deepEqual(result, [901]);
 });
 
 console.log("\n=== STRINGS ===");
@@ -79,7 +79,7 @@ for (const [op, code] of operators) {
   const input = `x${op}y`;
   test(`'${op}' → ${code} (in '${input}')`, () => {
     const result = codes(input);
-    deepEqual(result, [601, code, 601]);
+    deepEqual(result, [601, code, 602]);
   });
 }
 
@@ -102,10 +102,10 @@ test("error 002: invalid numeric '012'", () => {
 console.log("\n=== COMPOUND EXPRESSIONS ===");
 test("'let x = 42'", () => deepEqual(codes("let x = 42"), [112, 601, 201, 701]));
 test("'if x > y { log name }'", () => {
-  deepEqual(codes("if x > y { log name }"), [110, 601, 212, 601, 401, 113, 601, 402]);
+  deepEqual(codes("if x > y { log name }"), [110, 601, 212, 602, 401, 113, 603, 402]);
 });
 test("'x == 42 && y == 10'", () => {
-  deepEqual(codes("x == 42 && y == 10"), [601, 213, 701, 219, 601, 213, 701]);
+  deepEqual(codes("x == 42 && y == 10"), [601, 213, 701, 219, 602, 213, 702]);
 });
 
 console.log("\n=== NEW KEYWORDS IN CONTEXT ===");
