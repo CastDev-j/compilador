@@ -22,26 +22,26 @@ const _x = new RegExp(
   _p.map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|"),
   "g",
 );
-
 const _f = (s: string) =>
   (s + "\r").replaceAll("\r", " \r").replace(_x, (m) => ` ${m} `);
 
-function findNextState(state: number, ch: string): number | undefined {
-  const stateEntry = dfaStates.find(([id]) => id === state);
-  if (!stateEntry) return undefined;
+type TEntry = { code: number; label: string };
+
+function findNextState(state: number, ch: string) {
+  const entry = dfaStates.find(([id]) => id === state);
+  if (!entry) return;
   const idx = charToIndex[ch];
-  if (idx === undefined) return undefined;
-  return stateEntry[1 + idx];
+  return idx !== undefined ? entry[1 + idx] : undefined;
 }
 
-function findTokenEntry(next: number): { code: number; label: string }[] | undefined {
+function findTokenEntry(next: number): TEntry[] | undefined {
   const entry = tokenRegistry.find(([id]) => id === next);
-  if (!entry) return undefined;
+  if (!entry) return;
   if (entry.length === 3) {
-    const [, code, label] = entry as [number, number, string];
+    const [, code, label] = entry;
     return [{ code, label }];
   }
-  const [, compound] = entry as [number, [number, string][]];
+  const [, compound] = entry;
   return compound.map(([c, l]) => ({ code: c, label: l }));
 }
 
@@ -53,93 +53,75 @@ class LexerEngine {
   private intCounter = 701;
   private floatCounter = 901;
 
-  private getValue(buffer: string, entries: { code: number; label: string }[]): string {
-    if (entries.length <= 1) return buffer;
-    const trailing = entries.slice(1).map((e) => e.label).join("");
-    return buffer.slice(0, -trailing.length);
-  }
-
-  private assignDynamicCode(
-    next: number,
-    buffer: string,
-    entries: { code: number; label: string }[],
-  ): number {
-    const value = this.getValue(buffer, entries);
-
-    if (next >= 2000) {
-      let code = this.idMap.get(value);
-      if (!code) {
-        code = this.idCounter++;
-        this.idMap.set(value, code);
-      }
-      return code;
-    }
-
-    if (next === 1320) {
-      let code = this.floatMap.get(value);
-      if (!code) {
-        code = this.floatCounter++;
-        this.floatMap.set(value, code);
-      }
-      return code;
-    }
-
-    if (next >= 1310) {
-      let code = this.intMap.get(value);
-      if (!code) {
-        code = this.intCounter++;
-        this.intMap.set(value, code);
-      }
-      return code;
-    }
-
-    return entries[0].code;
-  }
-
   public scan(input: string) {
     let row = 1;
     let state = 0;
     const tokens: any[] = [];
-    let i = 0;
-    const len = input.length;
     let buffer = "";
 
-    while (i < len) {
-      const ch = input[i];
-
-      if (ch === "\n") {
-        row++;
-      }
+    for (const ch of input) {
+      if (ch === "\n") row++;
 
       const next = findNextState(state, ch);
-
-      if (next === 202) {
-        throw new Error(`Lexical error at line ${row}: [001] INVALID IDENTIFIER`);
-      }
-      if (next === 201) {
-        throw new Error(`Lexical error at line ${row}: [002] INVALID NUMERIC CONSTANT`);
-      }
-      if (next === undefined) {
+      if (next === 202)
+        throw new Error(
+          `Lexical error at line ${row}: [001] INVALID IDENTIFIER`,
+        );
+      if (next === 201)
+        throw new Error(
+          `Lexical error at line ${row}: [002] INVALID NUMERIC CONSTANT`,
+        );
+      if (next === undefined)
         throw new Error(`Lexical error at line ${row}: UNKNOWN`);
-      }
 
-      buffer += ![" ", "\t", "\n", "\r"].includes(ch!) ? ch : "";
+      if (ch !== " " && ch !== "\t" && ch !== "\n" && ch !== "\r") buffer += ch;
 
       const entries = findTokenEntry(next);
       if (entries) {
-        const dynamicCode = this.assignDynamicCode(next, buffer, entries);
+        const value =
+          entries.length <= 1
+            ? buffer
+            : buffer.slice(
+                0,
+                -entries
+                  .slice(1)
+                  .map((e) => e.label)
+                  .join("").length,
+              );
+
+        let code: number;
+        if (next >= 2000) {
+          code = this.idMap.get(value)!;
+          if (!code) {
+            code = this.idCounter++;
+            this.idMap.set(value, code);
+          }
+        } else if (next === 1320) {
+          code = this.floatMap.get(value)!;
+          if (!code) {
+            code = this.floatCounter++;
+            this.floatMap.set(value, code);
+          }
+        } else if (next >= 1310) {
+          code = this.intMap.get(value)!;
+          if (!code) {
+            code = this.intCounter++;
+            this.intMap.set(value, code);
+          }
+        } else {
+          code = entries[0].code;
+        }
+
         tokens.push({
-          token: entries.map((e, idx) => (idx === 0 ? dynamicCode : e.code)),
+          token: entries.map((e, idx) => (idx === 0 ? code : e.code)),
           word: entries.map((e) => e.label),
-          value: buffer,
+          value,
         });
         state = 0;
         buffer = "";
       } else {
         state = next;
       }
-
-      i++;
     }
     return tokens;
   }
