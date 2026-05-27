@@ -23,7 +23,23 @@ const _x = new RegExp(
 const _f = (s: string) =>
   (s + "\r").replaceAll("\r", " \r").replace(_x, (m) => ` ${m} `);
 
+function findNextState(state: number, ch: string): number | undefined {
+  const stateEntry = dfaStates.find(([id]) => id === state);
+  if (!stateEntry) return undefined;
+  const transition = stateEntry[1].find(([c]) => c === ch);
+  return transition?.[1];
+}
 
+function findTokenEntry(next: number): { code: number; label: string }[] | undefined {
+  const entry = tokenRegistry.find(([id]) => id === next);
+  if (!entry) return undefined;
+  if (entry.length === 3) {
+    const [, code, label] = entry as [number, number, string];
+    return [{ code, label }];
+  }
+  const [, compound] = entry as [number, [number, string][]];
+  return compound.map(([c, l]) => ({ code: c, label: l }));
+}
 
 class LexerEngine {
   private idMap = new Map<string, number>();
@@ -91,7 +107,7 @@ class LexerEngine {
         row++;
       }
 
-      const next = (dfaStates as any)[state]?.[ch];
+      const next = findNextState(state, ch);
 
       if (next === 202) {
         throw new Error(`Lexical error at line ${row}: [001] INVALID IDENTIFIER`);
@@ -105,10 +121,8 @@ class LexerEngine {
 
       buffer += ![" ", "\t", "\n", "\r"].includes(ch!) ? ch : "";
 
-      if (tokenRegistry[next]) {
-        const entries = Array.isArray(tokenRegistry[next])
-          ? tokenRegistry[next]
-          : [tokenRegistry[next]];
+      const entries = findTokenEntry(next);
+      if (entries) {
         const dynamicCode = this.assignDynamicCode(next, buffer, entries);
         tokens.push({
           token: entries.map((e, idx) => (idx === 0 ? dynamicCode : e.code)),
