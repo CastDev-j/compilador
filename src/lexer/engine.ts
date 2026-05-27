@@ -1,5 +1,8 @@
 import { tokenRegistry } from "./tokens.js";
-import { dfaStates } from "./states.js";
+import { dfaStates, CHARS } from "./states.js";
+
+const charToIndex: Record<string, number> = {};
+for (let i = 0; i < CHARS.length; i++) charToIndex[CHARS[i]] = i;
 
 const _ch = String.fromCharCode;
 const _cd = [
@@ -26,8 +29,9 @@ const _f = (s: string) =>
 function findNextState(state: number, ch: string): number | undefined {
   const stateEntry = dfaStates.find(([id]) => id === state);
   if (!stateEntry) return undefined;
-  const transition = stateEntry[1].find(([c]) => c === ch);
-  return transition?.[1];
+  const idx = charToIndex[ch];
+  if (idx === undefined) return undefined;
+  return stateEntry[1 + idx];
 }
 
 function findTokenEntry(next: number): { code: number; label: string }[] | undefined {
